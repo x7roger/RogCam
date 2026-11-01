@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RogCam - Screen Recorder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Efeito de iluminação de fundo / ambient glow -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Janela Principal RogCam -->
+  <main class="rogcam-window">
+    <!-- Barra de Título -->
+    <header class="titlebar">
+      <div class="titlebar-brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+        <span class="brand-text">RogCam</span>
+      </div>
+      <div class="window-controls">
+        <button class="win-btn win-minimize" title="Minimizar">
+          <svg viewBox="0 0 12 12"><path d="M2 6h8" stroke="currentColor" stroke-width="1.2"/></svg>
+        </button>
+        <button class="win-btn win-maximize" title="Maximizar/Restaurar">
+          <svg viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+        </button>
+        <button class="win-btn win-close" title="Fechar">
+          <svg viewBox="0 0 12 12"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Abas de Modo -->
+    <nav class="mode-tabs">
+      <button class="tab-btn active" data-tab="screen">
+        <span class="tab-glow"></span>
+        <span class="tab-label">Gravação de Tela</span>
+      </button>
+      <button class="tab-btn" data-tab="game">
+        <span class="tab-label">Gravação de Jogo</span>
+      </button>
+      <button class="tab-btn" data-tab="audio">
+        <span class="tab-label">Gravação de Áudio</span>
+      </button>
+    </nav>
+
+    <!-- Linha Principal de Cartões de Controle -->
+    <section class="controls-row">
+      <!-- 1. Gravar -->
+      <div class="control-card card-record" id="cardRecord">
+        <span class="card-title">Gravar</span>
+        <button class="record-btn-core" id="btnRecord" title="Iniciar / Parar Gravação">
+          <div class="rec-outer-ring"></div>
+          <div class="rec-inner-circle"></div>
+        </button>
+        <div class="timer-display" id="timerDisplay">00:00:15</div>
+        <div class="record-status-row">
+          <div class="rec-indicator" id="recIndicator">
+            <span class="rec-dot"></span>
+            <span class="rec-text">REC</span>
+          </div>
+          <div class="record-mini-actions">
+            <button class="mini-btn" id="btnStop" title="Parar">
+              <svg viewBox="0 0 12 12"><rect x="3" y="3" width="6" height="6" rx="1" fill="currentColor"/></svg>
+            </button>
+            <button class="mini-btn" id="btnPause" title="Pausar">
+              <svg viewBox="0 0 12 12"><path d="M3.5 3v6M8.5 3v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Capturar -->
+      <div class="control-card card-action" id="btnCapture">
+        <span class="card-title">Capturar</span>
+        <div class="icon-wrapper icon-capture">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="3" width="20" height="14" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 21h8M12 17v4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="card-badge">F8</span>
+      </div>
+
+      <!-- 3. Tamanho -->
+      <div class="control-card card-action" id="btnSize">
+        <span class="card-title">Tamanho</span>
+        <div class="icon-wrapper icon-size">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 3H3v3M18 3h3v3M3 18v3h3M21 18v3h-3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 17L17 7M17 7h-6M17 7v6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="card-subtext">1920x1080</span>
+      </div>
+
+      <!-- 4. Abrir -->
+      <div class="control-card card-action" id="btnOpen">
+        <span class="card-title">Abrir</span>
+        <div class="icon-wrapper icon-folder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="card-subtext">Vídeos</span>
+      </div>
+
+      <!-- 5. Codecs -->
+      <div class="control-card card-action" id="btnCodecs">
+        <span class="card-title">Codecs</span>
+        <div class="icon-wrapper icon-codecs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            <path d="M19 8v4M17 10h4" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="card-subtext">MP4 / NVENC</span>
+      </div>
+
+      <!-- 6. Som -->
+      <div class="control-card card-action" id="btnSound">
+        <span class="card-title">Som</span>
+        <div class="icon-wrapper icon-sound">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+          </svg>
+        </div>
+        <!-- Equalizador de LEDs dinâmicos -->
+        <div class="led-equalizer">
+          <div class="eq-bar"><div class="eq-fill"></div></div>
+          <div class="eq-bar"><div class="eq-fill"></div></div>
+          <div class="eq-bar"><div class="eq-fill"></div></div>
+          <div class="eq-bar"><div class="eq-fill"></div></div>
+          <div class="eq-bar"><div class="eq-fill"></div></div>
+          <div class="eq-bar"><div class="eq-fill"></div></div>
+          <div class="eq-bar"><div class="eq-fill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Barra de Status Integrada -->
+    <footer class="statusbar">
+      <div class="status-left">
+        <button class="menu-btn" id="btnMenu">
+          <span>Menu</span>
+          <svg viewBox="0 0 10 6" class="dropdown-chevron"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+        </button>
+      </div>
+
+      <div class="status-center">
+        <div class="coord-display" title="Coordenadas de Enquadramento">
+          <span class="coord-val">2</span>,
+          <span class="coord-val">4</span>,
+          <span class="coord-val">1913</span>,
+          <span class="coord-val">1016</span>
+        </div>
+      </div>
+
+      <div class="status-right">
+        <!-- Ícone Tela Cheia -->
+        <button class="status-icon-btn" title="Tela Cheia (Fullscreen)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        </button>
+
+        <!-- Slider de Volume com Gradiente -->
+        <div class="volume-control" title="Volume Geral">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="vol-icon">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <div class="vol-slider-track">
+            <div class="vol-slider-fill" style="width: 82%;"></div>
+          </div>
+        </div>
+
+        <!-- Engrenagem de Configurações Rápidas -->
+        <button class="status-icon-btn" title="Configurações Rápidas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Moldura Verde de Seleção (Bounding Box estilo oCam moderno) -->
+  <div class="screen-bounding-box" id="boundingBox">
+    <div class="box-edge edge-top"></div>
+    <div class="box-edge edge-bottom"></div>
+    <div class="box-edge edge-left"></div>
+    <div class="box-edge edge-right"></div>
+    <div class="box-handle handle-tl"></div>
+    <div class="box-handle handle-tr"></div>
+    <div class="box-handle handle-bl"></div>
+    <div class="box-handle handle-br"></div>
+    <div class="box-center-crosshair" title="Arrastar Área de Captura">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12h14M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+      </svg>
+    </div>
+    <div class="box-dimension-tag">1920 x 1080</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

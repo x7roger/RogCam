@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>RogCam Selection Box</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+    }
+    .bounding-frame {
+      width: 100%;
+      height: 100%;
+      border: 3px dashed #22c55e;
+      position: relative;
+      background: rgba(34, 197, 94, 0.01);
+      box-shadow: inset 0 0 15px rgba(34, 197, 94, 0.15), 0 0 15px rgba(34, 197, 94, 0.35);
+      border-radius: 4px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Estado gravando: a borda fica vermelha e a mira central some */
+    .bounding-frame.is-recording {
+      border-color: #ef4444;
+      border-style: solid;
+      box-shadow: inset 0 0 15px rgba(239, 68, 68, 0.25), 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+    .bounding-frame.is-recording .crosshair-mover,
+    .bounding-frame.is-recording .dimension-badge {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Alça central de movimentação */
+    .crosshair-mover {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.88);
+      border: 2px solid #22c55e;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #22c55e;
+      cursor: move;
+      -webkit-app-region: drag;
+      transition: opacity 0.2s ease;
+    }
+    .crosshair-mover svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    /* Tag de dimensões */
+    .dimension-badge {
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid #22c55e;
+      border-radius: 4px;
+      padding: 3px 8px;
+      color: #22c55e;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      transition: opacity 0.2s ease;
+    }
+
+    /* Alças nos 4 cantos */
+    .corner-handle {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #22c55e;
+      border: 2px solid #ffffff;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+      transition: background 0.2s ease;
+    }
+    .bounding-frame.is-recording .corner-handle {
+      background: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
+    }
+    .handle-nw { top: -2px; left: -2px; }
+    .handle-ne { top: -2px; right: -2px; }
+    .handle-sw { bottom: -2px; left: -2px; }
+    .handle-se { bottom: -2px; right: -2px; }
+  </style>
+</head>
+<body>
+  <div class="bounding-frame" id="frame">
+    <div class="dimension-badge" id="dimBadge">1280 x 720</div>
+    <div class="crosshair-mover" title="Arraste para reposicionar a área de gravação">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 2v20M2 12h20"/>
+        <circle cx="12" cy="12" r="7"/>
+      </svg>
+    </div>
+    <div class="corner-handle handle-nw"></div>
+    <div class="corner-handle handle-ne"></div>
+    <div class="corner-handle handle-sw"></div>
+    <div class="corner-handle handle-se"></div>
+  </div>
+
+  <script>
+    const frame = document.getElementById('frame');
+    const badge = document.getElementById('dimBadge');
+
+    function updateBadge() {
+      badge.textContent = `${window.innerWidth} x ${window.innerHeight}`;
+    }
+    window.addEventListener('resize', updateBadge);
+    updateBadge();
+
+    // Ouvir início e fim da gravação via Electron IPC se disponível
+    if (window.electronAPI) {
+      window.electronAPI.onRecordingState((isRecording) => {
+        if (isRecording) {
+          frame.classList.add('is-recording');
+        } else {
+          frame.classList.remove('is-recording');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

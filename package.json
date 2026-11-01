@@ -1,0 +1,26 @@
+{
+  "name": "rogcam",
+  "version": "1.0.0",
+  "description": "RogCam - Gravador de tela moderno, rápido e offline inspirado no oCam",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "keywords": [
+    "screen-recorder",
+    "screen-capture",
+    "desktop-capture",
+    "ocam",
+    "electron"
+  ],
+  "author": "Antigravity & RogCam Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^44.9.0"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "fluent-ffmpeg": "^2.1.3"
+  }
+}
